@@ -4,6 +4,8 @@
 #include "cuda.h"
 #include <stdio.h>
 #include <math.h>
+#include <unistd.h>
+#include <sys/time.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -536,7 +538,7 @@ void rgbgr_image(image im)
 
 int show_image(image p, const char *name, int ms)
 {
-#ifdef OPENCV
+#ifdef OPENCV_GUI
     int c = show_image_cv(p, name, ms);
     return c;
 #else
@@ -630,19 +632,22 @@ image float_to_image(int w, int h, int c, float *data)
     return out;
 }
 
-void place_image(image im, int w, int h, int dx, int dy, image canvas)
-{
-    int x, y, c;
-    for(c = 0; c < im.c; ++c){
-        for(y = 0; y < h; ++y){
-            for(x = 0; x < w; ++x){
-                float rx = ((float)x / w) * im.w;
-                float ry = ((float)y / h) * im.h;
-                float val = bilinear_interpolate(im, rx, ry, c);
-                set_pixel(canvas, x + dx, y + dy, c, val);
-            }
-        }
-    }
+void place_image(image im, int w, int h, int dx, int dy, image canvas) {
+#ifdef OPENCV
+	place_image_cv(im, w, h, dx, dy, canvas);
+#else
+	int x, y, c;
+	for (c = 0; c < im.c; ++c) {
+		for (y = 0; y < h; ++y) {
+			for (x = 0; x < w; ++x) {
+				float rx = ((float) x / w) * im.w;
+				float ry = ((float) y / h) * im.h;
+				float val = bilinear_interpolate(im, rx, ry, c);
+				set_pixel(canvas, x + dx, y + dy, c, val);
+			}
+		}
+	}
+#endif
 }
 
 image center_crop_image(image im, int w, int h)
@@ -1198,7 +1203,10 @@ void saturate_exposure_image(image im, float sat, float exposure)
 
 image resize_image(image im, int w, int h)
 {
-    image resized = make_image(w, h, im.c);   
+#ifdef OPENCV
+	return resize_image_cv(im, w, h);
+#else
+    image resized = make_image(w, h, im.c);
     image part = make_image(w, im.h, im.c);
     int r, c, k;
     float w_scale = (float)(im.w - 1) / (w - 1);
@@ -1238,6 +1246,7 @@ image resize_image(image im, int w, int h)
 
     free_image(part);
     return resized;
+#endif
 }
 
 
