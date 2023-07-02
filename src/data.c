@@ -654,7 +654,7 @@ matrix load_tags_paths(char **paths, int n, int k)
     return y;
 }
 
-char **get_labels(char *filename)
+char **get_labels(const char *filename)
 {
     list *plist = get_paths(filename);
     char **labels = (char **)list_to_array(plist);

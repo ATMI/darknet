@@ -16,7 +16,7 @@ extern "C" {
 #ifdef OPENCV
 void *open_video_stream(const char *f, int c, int w, int h, int fps);
 image get_image_from_stream(void *p);
-image load_image_cv(char *filename, int channels);
+image load_image_cv(const char *filename, int channels);
 void place_image_cv(image im, int w, int h, int dx, int dy, image canvas);
 image resize_image_cv(image im, int w, int h);
 int show_image_cv(image im, const char* name, int ms);

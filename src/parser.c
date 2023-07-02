@@ -42,7 +42,7 @@ typedef struct{
     list *options;
 }section;
 
-list *read_cfg(char *filename);
+list *read_cfg(const char *filename);
 
 LAYER_TYPE string_to_layer_type(char * type)
 {
@@ -739,7 +739,7 @@ int is_network(section *s)
             || strcmp(s->type, "[network]")==0);
 }
 
-network *parse_network_cfg(char *filename)
+network *parse_network_cfg(const char *filename)
 {
     list *sections = read_cfg(filename);
     node *n = sections->front;
@@ -888,7 +888,7 @@ network *parse_network_cfg(char *filename)
     return net;
 }
 
-list *read_cfg(char *filename)
+list *read_cfg(const char *filename)
 {
     FILE *file = fopen(filename, "r");
     if(file == 0) file_error(filename);
